@@ -9,6 +9,12 @@ class VideoReaderNP(VideoReader):
     """VideoReader posing as numpy array."""
 
     def __init__(self, filename: str, remove_leading_singleton: bool = True):
+        """
+
+        Args:
+            filename (str): filename of the video
+            remove_leading_singleton (bool, optional): Remove leading singleton dimension when returning single frames. Defaults to True.
+        """
         super().__init__(filename)
         self.remove_leading_singleton = remove_leading_singleton
 
@@ -18,7 +24,8 @@ class VideoReaderNP(VideoReader):
         frames = None
         if isinstance(index, int):  # single frame
             ret, frames = self.read(index)
-            frames = cv2.cvtColor(frames, cv2.COLOR_BGR2RGB)
+            if frames.shape[2]==3:
+                frames = cv2.cvtColor(frames, cv2.COLOR_BGR2RGB)
         elif isinstance(index, slice):  # slice of frames
             frames = np.stack([self[ii] for ii in range(*index.indices(len(self)))])
         elif isinstance(index, range):  # range of frames
